@@ -1,0 +1,21 @@
+{
+ "_notice": "Grown automatically from production corrections (Tier B).",
+ "cases": [
+  {
+   "id": "r-A-003-G-003",
+   "source": "human_correction",
+   "at": "2026-09-25T12:53:47+00:00",
+   "asset": {
+    "id": "A-003",
+    "description": "",
+    "asset_type": "warehouse",
+    "recorded_address": "مستودع الساحل 2",
+    "attributes": {}
+   },
+   "expected": {
+    "action": "commit",
+    "feature_id": "G-003"
+   }
+  }
+ ]
+}

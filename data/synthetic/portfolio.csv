@@ -1,0 +1,5 @@
+facility_id,borrower_name_en,borrower_name_ar,sector,outstanding_aed,maturity_year,collateral_ref,collateral_description,recorded_address
+L-001,Al Noor Manufacturing LLC,النور للصناعات ذ.م.م,Manufacturing,18000000,2031,A-001,Factory building and production equipment,"Office 1402, Gate Village 5, DIFC, Dubai"
+L-002,Desert Line Distribution,خط الصحراء للتوزيع,Wholesale trade,9500000,2029,A-002,Distribution centre,"قطعة رقم ١٢٠، منطقة القوز الصناعية ٣، دبي"
+L-003,Sahil Logistics Warehousing,ساحل للخدمات اللوجستية,Transport and storage,12000000,2033,A-003,Warehouse (primary collateral),"مستودع الساحل ٢، منطقة القوز الصناعية ٣، دبي"
+L-003,Sahil Logistics Warehousing,ساحل للخدمات اللوجستية,Transport and storage,12000000,2033,A-004,Cold store (secondary collateral),"Jebel Ali Industrial Area, Dubai"

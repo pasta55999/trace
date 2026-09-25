@@ -1,0 +1,40 @@
+# SYNTHETIC damage functions for demonstration only. Not validated against observed losses.
+# Each curve maps flood depth above ground floor (metres) -> damage fraction of replacement value.
+functions:
+  - id: vuln:industrial_building_uae_demo
+    version: "0.1.0"
+    hazard: flood_depth
+    asset_type: industrial_building
+    region: UAE
+    validation_status: illustrative
+    curve: [[0.0, 0.00], [0.1, 0.03], [0.3, 0.08], [0.5, 0.14], [1.0, 0.26], [1.5, 0.36], [2.0, 0.45]]
+    modifiers:
+      basement:
+        "true": {add: 0.05}
+        "false": {add: 0.0}
+        unknown: {range: [0.0, 0.05]}
+  - id: vuln:plant_equipment_uae_demo
+    version: "0.1.0"
+    hazard: flood_depth
+    asset_type: plant_equipment
+    region: UAE
+    validation_status: illustrative
+    curve: [[0.0, 0.00], [0.1, 0.05], [0.3, 0.15], [0.5, 0.30], [1.0, 0.55], [1.5, 0.70], [2.0, 0.80]]
+    modifiers:
+      switchboard_location:
+        basement: {multiply: 1.6, floor: 0.35}
+        ground_floor: {multiply: 1.0}
+        raised: {multiply: 0.55}
+        unknown: {range_from: [raised, basement]}
+  - id: vuln:stock_generic_demo
+    version: "0.1.0"
+    hazard: flood_depth
+    asset_type: stock
+    region: UAE
+    validation_status: illustrative
+    curve: [[0.0, 0.00], [0.1, 0.10], [0.3, 0.35], [0.5, 0.60], [1.0, 0.90], [2.0, 1.00]]
+    modifiers: {}
+business_interruption:
+  # days of interruption as a function of depth (illustrative)
+  curve: [[0.0, 0], [0.1, 5], [0.3, 15], [0.5, 30], [1.0, 60], [1.5, 90], [2.0, 120]]
+  switchboard_multiplier: {basement: 1.5, ground_floor: 1.0, raised: 0.7, unknown: null}

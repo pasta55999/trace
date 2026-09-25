@@ -1,0 +1,20 @@
+# SYNTHETIC adaptation measures. Costs and effectiveness are illustrative placeholders for engineering review.
+measures:
+  - id: measure:flood_barrier_perimeter
+    name_en: Perimeter flood barrier (0.6 m demountable)
+    name_ar: حاجز فيضان محيطي (0.6 م قابل للفك)
+    capex_aed: 900000
+    annual_maintenance_aed: 30000
+    effect: {type: reduce_depth, metres: 0.6}
+    assumed_effectiveness: 0.85
+    notes_en: Reduces effective water depth at the building by up to 0.6 m when deployed in time.
+    notes_ar: يقلل عمق المياه الفعلي عند المبنى بما يصل إلى 0.6 م عند نشره في الوقت المناسب.
+  - id: measure:raise_switchboards
+    name_en: Relocate electrical switchboards above ground level
+    name_ar: نقل لوحات التوزيع الكهربائية فوق مستوى الأرض
+    capex_aed: 350000
+    annual_maintenance_aed: 5000
+    effect: {type: set_attribute, attribute: switchboard_location, value: raised}
+    assumed_effectiveness: 1.0
+    notes_en: Removes basement/ground-level switchboard exposure; does not change building damage.
+    notes_ar: يزيل تعرض لوحات التوزيع في الطابق السفلي/الأرضي؛ لا يغير أضرار المبنى.

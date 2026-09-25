@@ -1,0 +1,30 @@
+{
+  "type": "Feature",
+  "stac_version": "1.0.0",
+  "id": "flood_pluvial_illustrative_rp100_2050_ssp245",
+  "properties": {
+    "title": "ILLUSTRATIVE pluvial flood depth, 1-in-100, 2050, SSP2-4.5",
+    "title_ar": "عمق فيضان سطحي توضيحي، 1 في 100، 2050، SSP2-4.5",
+    "hazard": "flood_depth",
+    "unit": "m",
+    "version": "2026.1-synthetic",
+    "spatial_resolution_m": 40,
+    "pathway": "SSP2-4.5",
+    "horizon": 2050,
+    "return_period": 100,
+    "validation_status": "illustrative",
+    "licence": "synthetic - no real data",
+    "grid": {
+      "nx": 100,
+      "ny": 75,
+      "order": "row-major, lat ascending"
+    },
+    "asset_file": "flood_depth_rp100_2050.npy"
+  },
+  "bbox": [
+    55.22,
+    25.12,
+    55.26,
+    25.15
+  ]
+}

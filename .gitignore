@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+data/runtime/
+evolution/genome/**/candidates/
+evolution/telemetry/events*.jsonl
+.env
+apps/web/node_modules/
+apps/web/.next/
+apps/web/out/
+*.log

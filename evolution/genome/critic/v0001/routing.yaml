@@ -1,0 +1,6 @@
+forbidden_phrases:
+- cbuae approved
+- official submission
+- guaranteed
+- certified safe
+require_parity: true

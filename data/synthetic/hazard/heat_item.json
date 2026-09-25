@@ -1,0 +1,26 @@
+{
+  "id": "heat_days_cmip6_district_illustrative",
+  "properties": {
+    "title": "District-level count of days > 45C (illustrative, 25 km source resolution)",
+    "hazard": "heat_days_gt45c",
+    "unit": "days/yr",
+    "version": "2026.1-synthetic",
+    "spatial_resolution_m": 25000,
+    "precision_class": "district",
+    "validation_status": "illustrative"
+  },
+  "values": {
+    "D-AQ3": {
+      "baseline": 9,
+      "2050": 21
+    },
+    "D-JAI": {
+      "baseline": 8,
+      "2050": 19
+    },
+    "D-DIFC": {
+      "baseline": 7,
+      "2050": 17
+    }
+  }
+}

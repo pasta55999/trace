@@ -1,0 +1,6 @@
+min_confidence: 0.9
+fuzzy_cutoff: 0.85
+accept_district_as_screening: true
+ambiguity_margin: 0.02
+aliases: {}
+never_use_office_as_site: true

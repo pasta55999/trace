@@ -1,0 +1,35 @@
+{
+  "_notice": "SYNTHETIC gazetteer. Names and plot references are fictional; coordinates are illustrative.",
+  "districts": [
+    {"id": "D-AQ3", "name_en": "Al Quoz Industrial Area 3", "name_ar": "منطقة القوز الصناعية 3", "emirate": "Dubai", "centroid": [55.240, 25.135]},
+    {"id": "D-JAI", "name_en": "Jebel Ali Industrial Area", "name_ar": "منطقة جبل علي الصناعية", "emirate": "Dubai", "centroid": [55.030, 24.980]},
+    {"id": "D-DIFC", "name_en": "DIFC", "name_ar": "مركز دبي المالي العالمي", "emirate": "Dubai", "centroid": [55.282, 25.212]}
+  ],
+  "features": [
+    {
+      "id": "G-001", "kind": "plot", "plot_ref": "AQ3-114", "district_id": "D-AQ3",
+      "name_en": "Plot AQ3-114 (industrial)", "name_ar": "قطعة AQ3-114 (صناعي)",
+      "footprint": [[55.2375, 25.1335], [55.2385, 25.1335], [55.2385, 25.1343], [55.2375, 25.1343]]
+    },
+    {
+      "id": "G-002", "kind": "plot", "plot_ref": "AQ3-120", "district_id": "D-AQ3",
+      "name_en": "Plot AQ3-120 (industrial)", "name_ar": "قطعة رقم 120 القوز الصناعية 3",
+      "footprint": [[55.2425, 25.1355], [55.2437, 25.1355], [55.2437, 25.1364], [55.2425, 25.1364]]
+    },
+    {
+      "id": "G-003", "kind": "facility", "plot_ref": "AQ3-131", "district_id": "D-AQ3",
+      "name_en": "Sahil Warehouse 2", "name_ar": "مستودع ساحل 2",
+      "footprint": [[55.2355, 25.1381], [55.2367, 25.1381], [55.2367, 25.1390], [55.2355, 25.1390]]
+    },
+    {
+      "id": "G-004", "kind": "facility", "plot_ref": "AQ3-131", "district_id": "D-AQ3",
+      "name_en": "Sahil Warehouse 1", "name_ar": "مستودع ساحل 1",
+      "footprint": [[55.2340, 25.1381], [55.2352, 25.1381], [55.2352, 25.1390], [55.2340, 25.1390]]
+    },
+    {
+      "id": "G-005", "kind": "office", "plot_ref": null, "district_id": "D-DIFC",
+      "name_en": "Gate Village 5, DIFC", "name_ar": "جيت فيلدج 5، مركز دبي المالي العالمي",
+      "footprint": [[55.2815, 25.2115], [55.2825, 25.2115], [55.2825, 25.2125], [55.2815, 25.2125]]
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "_notice": "Human-owned golden set (Tier C - agents cannot edit). expected.action: commit:<feature> | ask | district",
+  "cases": [
+    {"id": "g-plot-en", "asset": {"id": "T1", "description": "Factory", "asset_type": "industrial_building", "recorded_address": "Office 1402, Gate Village 5, DIFC, Dubai", "attributes": {"plot_ref": "AQ3-114"}}, "expected": {"action": "commit", "feature_id": "G-001"}},
+    {"id": "g-plot-ar-digits", "asset": {"id": "T2", "description": "Distribution centre", "asset_type": "distribution_centre", "recorded_address": "قطعة رقم ١٢٠، منطقة القوز الصناعية ٣، دبي", "attributes": {}}, "expected": {"action": "commit", "feature_id": "G-002"}},
+    {"id": "g-name-en-exact", "asset": {"id": "T3", "description": "Warehouse", "asset_type": "warehouse", "recorded_address": "Sahil Warehouse 1, Al Quoz Industrial Area 3", "attributes": {}}, "expected": {"action": "commit", "feature_id": "G-004"}},
+    {"id": "g-name-ar-exact", "asset": {"id": "T4", "description": "Warehouse", "asset_type": "warehouse", "recorded_address": "مستودع ساحل 2، القوز الصناعية 3", "attributes": {}}, "expected": {"action": "commit", "feature_id": "G-003"}},
+    {"id": "g-district-only", "asset": {"id": "T5", "description": "Cold store", "asset_type": "cold_store", "recorded_address": "Jebel Ali Industrial Area, Dubai", "attributes": {}}, "expected": {"action": "district"}},
+    {"id": "g-nothing", "asset": {"id": "T6", "description": "Workshop", "asset_type": "industrial_building", "recorded_address": "Somewhere unknown", "attributes": {}}, "expected": {"action": "ask"}}
+  ]
+}

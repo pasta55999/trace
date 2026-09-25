@@ -1,0 +1,2 @@
+min_cluster_size: 1
+lookback_events: 500

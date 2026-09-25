@@ -1,0 +1,29 @@
+intents:
+  flood_ranking:
+  - most exposed
+  - flood
+  - فيضان
+  - الأكثر عرضة
+  concentration:
+  - concentrat
+  - shared
+  - same
+  - مشترك
+  - تركز
+  unknowns:
+  - unknown
+  - missing
+  - unresolved
+  - غير معروف
+  - مجهول
+  - ناقص
+  changes:
+  - changed
+  - since
+  - تغير
+  - منذ
+  insurance:
+  - insur
+  - cover
+  - تأمين
+  - تغطية

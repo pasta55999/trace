@@ -1,0 +1,4 @@
+languages:
+- en
+- ar
+require_critic_pass: true

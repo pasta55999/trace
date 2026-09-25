@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="{{ lang }}" dir="{{ dir }}">
+<head>
+<meta charset="utf-8">
+<title>{{ t.title }}</title>
+<style>
+  body{font-family:"Segoe UI",Tahoma,Arial,sans-serif;margin:32px;color:#1a1a1a}
+  h1{font-size:22px} h2{font-size:16px;margin-top:28px;border-bottom:1px solid #ddd;padding-bottom:4px}
+  .banner{background:#fff4d6;border:1px solid #e0b64a;padding:8px 12px;font-weight:600}
+  table{border-collapse:collapse;width:100%;font-size:12px;margin-top:8px}
+  th,td{border:1px solid #ccc;padding:6px;text-align:start;vertical-align:top}
+  th{background:#f3f3f3} .num{font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate;text-align:end}
+  .muted{color:#666;font-size:12px} .warn{color:#8a4b00}
+</style>
+</head>
+<body>
+<h1>{{ t.title }}</h1>
+<div class="banner">{{ t.illustrative }}</div>
+<p><strong>{{ t.scenario }}:</strong> {{ tree.run.scenario.label_ar if lang == 'ar' else tree.run.scenario.label_en }} &middot; run <span class="num">{{ tree.run.run_id }}</span></p>
+<p><strong>{{ t.coverage }}:</strong> <span class="num">{{ tree.coverage.assets_location_confirmed }} / {{ tree.coverage.assets_total }}</span> {{ t.assets_confirmed }} &middot; <span class="num">{{ tree.coverage.open_questions }}</span> {{ t.open_questions }}</p>
+
+<h2>{{ t.asset }}</h2>
+<p class="muted">{{ t.columns_note }}</p>
+<!--RESULTS-->
+<table>
+<tr><th>{{ t.asset }}</th><th>{{ t.borrower }}</th><th>{{ t.sector }}</th><th>{{ t.precision }}</th><th>{{ t.depth }}</th><th>{{ t.outstanding }}</th><th>{{ t.damage }}</th><th>{{ t.bi }}</th><th>{{ t.insured }}</th><th>{{ t.collateral }}</th><th>{{ t.credit_loss }}</th></tr>
+{% for a in tree.run.assets %}
+<tr>
+<td>{{ a.asset_id }}<br><span class="muted">{{ a.description }}</span></td>
+<td>{{ a.borrower_ar if lang == 'ar' else a.borrower }}</td>
+<td>{{ a.sector }}</td>
+<td>{{ a.precision }}</td>
+<td class="num">{{ fmt(a.depth_above_floor_m) }}</td>
+<td class="num">{{ fmt(a.outstanding_allocated_aed) }}</td>
+<td class="num">{{ fmt(a.physical_damage_total_aed) }}</td>
+<td class="num">{{ fmt(a.interruption_cost_aed) }}</td>
+<td class="num">{{ fmt(a.insured_loss_aed) }}</td>
+<td class="num">{{ fmt(a.collateral_value_sensitivity_aed) }}</td>
+<td class="muted">{{ t.not_modelled }}</td>
+</tr>
+{% endfor %}
+</table>
+
+<h2>{{ t.concentration }}</h2>
+{% set c = tree.run.aggregation.concentration %}
+<table>
+<tr><th>{{ t.borrower }}</th><td>{{ c.borrowers | join(', ') }}</td></tr>
+<tr><th>{{ t.sector }}</th><td>{{ c.sectors | join(', ') }}</td></tr>
+<tr><th>{{ t.outstanding }}</th><td class="num">{{ fmt(c.outstanding_in_footprint_aed) }} ({{ (c.share_of_portfolio_outstanding * 100) | round(1) }}%)</td></tr>
+<tr><th>{{ t.damage }}</th><td class="num">{{ fmt(c.physical_damage_total_aed) }}</td></tr>
+<tr><th>{{ t.insured }}</th><td class="num">{{ fmt(c.insured_loss_total_aed) }}</td></tr>
+</table>
+<p class="warn">{{ tree.run.aggregation.diversification_warning_ar if lang == 'ar' else tree.run.aggregation.diversification_warning_en }}</p>
+<p class="muted">{{ c.note_ar if lang == 'ar' else c.note_en }}</p>
+
+{% if tree.adaptation %}
+<h2>{{ t.adaptation }}</h2>
+<table>
+<tr><th></th><td>{{ tree.adaptation.measure.name_ar if lang == 'ar' else tree.adaptation.measure.name_en }}</td></tr>
+<tr><th>{{ t.capex }}</th><td class="num">{{ fmt(tree.adaptation.capex_aed) }}</td></tr>
+<tr><th>{{ t.avoided }}</th><td class="num">{{ fmt(tree.adaptation.avoided_loss_event_aed) }}</td></tr>
+<tr><th>{{ t.residual }}</th><td class="num">{{ fmt(tree.adaptation.residual_damage_event_aed) }}</td></tr>
+{% if tree.adaptation.event_conditional_benefit_cost_ratio is defined %}<tr><th>{{ t.bcr }}</th><td class="num">{{ tree.adaptation.event_conditional_benefit_cost_ratio }}</td></tr>{% endif %}
+</table>
+<p class="muted">{{ tree.adaptation.disclaimer_ar if lang == 'ar' else tree.adaptation.disclaimer_en }}</p>
+{% endif %}
+<!--/RESULTS-->
+
+<h2>{{ t.changes }}</h2>
+{% if tree.diff and tree.diff.changes %}
+<table><tr><th>{{ t.asset }}</th><th>field</th><th>kind</th><th>from</th><th>to</th></tr>
+{% for ch in tree.diff.changes %}<tr><td>{{ ch.asset_id }}</td><td>{{ ch.field }}</td><td>{{ ch.kind }}</td><td class="num">{{ ch.from }}</td><td class="num">{{ ch.to }}</td></tr>{% endfor %}
+</table>
+{% else %}<p class="muted">{{ t.no_changes }}</p>{% endif %}
+
+<h2>{{ t.assumptions }}</h2>
+{% set p = tree.run.assets[0].provenance %}
+<ul class="muted">
+<li>engine: <span class="num">{{ p.engine_version }}</span></li>
+{% for k, v in p.dataset_versions.items() %}<li><span class="num">{{ k }} = {{ v }}</span></li>{% endfor %}
+{% for a in p.assumptions %}<li>{{ a }}</li>{% endfor %}
+</ul>
+
+<h2>{{ t.glossary }}</h2>
+<table>{% for g in tree.glossary %}<tr><th>{{ g.term_ar if lang == 'ar' else g.term_en }}</th><td>{{ g.def_ar if lang == 'ar' else g.def_en }}</td></tr>{% endfor %}</table>
+</body>
+</html>

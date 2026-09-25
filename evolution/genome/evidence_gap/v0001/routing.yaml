@@ -1,0 +1,13 @@
+max_questions_per_round: 1
+question_templates:
+  switchboard_location:
+    en: 'For {asset}: are the electrical switchboards in the basement, on the ground
+      floor, or raised above ground level? This changes the equipment-damage estimate
+      from {low:,.0f} to {high:,.0f} AED.'
+    ar: 'بالنسبة إلى {asset}: هل لوحات التوزيع الكهربائية في الطابق السفلي أم في الطابق
+      الأرضي أم مرفوعة فوق مستوى الأرض؟ يغيّر هذا تقدير أضرار المعدات من {low:,.0f}
+      إلى {high:,.0f} درهم.'
+  basement:
+    en: 'For {asset}: does the building have a basement? Spread: {low:,.0f}-{high:,.0f}
+      AED.'
+    ar: 'بالنسبة إلى {asset}: هل يوجد طابق سفلي؟ المدى: {low:,.0f}-{high:,.0f} درهم.'
