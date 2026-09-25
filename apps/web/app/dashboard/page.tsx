@@ -2,8 +2,9 @@
 import Link from "next/link";
 import AppShell from "@/components/AppShell";
 import { BarChart, BarLabels } from "@/components/Charts";
+import Scene, { sceneFor } from "@/components/Scene";
 import { fmt, useI18n } from "@/lib/i18n";
-import { greetingKey, mid, riskLevel, sectorClass } from "@/lib/risk";
+import { greetingKey, mid, riskLevel } from "@/lib/risk";
 import { useStatus } from "@/lib/useStatus";
 
 const PINS: Record<string, [number, number]> = { "A-001": [46, 50], "A-002": [60, 42], "A-003": [42, 30], "A-004": [14, 78] };
@@ -39,9 +40,10 @@ export default function Dashboard() {
           <div className="grid cols-2-1">
             <div className="card">
               <div className="row" style={{ justifyContent: "space-between" }}><h2>{t("by_sector")}</h2><Link href="/portfolio" className="muted small">{t("view_details")} →</Link></div>
-              <div className="grid cols-3">
+              <div className="grid cols-3" style={{ height: "calc(100% - 34px)" }}>
                 {[...sectors.entries()].map(([sec, g]) => (
-                  <Link key={sec} href="/portfolio" className={`photo ${sectorClass(sec)}`}>
+                  <Link key={sec} href="/portfolio" className="photo" style={{ minHeight: 210 }}>
+                    <Scene kind={sceneFor(sec)} />
                     <div className="t">{sec}</div>
                     <div className="s num">AED {fmt(g.outstanding, lang, true)} · {g.n} {t("properties")}</div>
                     <span className={`chip ${g.worst}`}>{t(`risk_${g.worst}` as "risk_high")}</span>

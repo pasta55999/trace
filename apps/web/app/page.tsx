@@ -12,7 +12,7 @@ export default function Landing() {
       <div className="contours" />
       <div className="orb o1" /><div className="orb o2" /><div className="orb o3" />
       <div className="top">
-        <Logo size={40} />
+        <Logo size={44} glow />
         <div className="tabs"><button className={lang === "en" ? "on" : ""} onClick={() => setLang("en")}>EN</button><button className={lang === "ar" ? "on" : ""} onClick={() => setLang("ar")}>عربي</button></div>
       </div>
       <div className="copy">

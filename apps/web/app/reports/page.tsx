@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import AppShell from "@/components/AppShell";
 import { API, api, type Governance, type Measure } from "@/lib/api";
 import { fmt, useI18n } from "@/lib/i18n";
+import Scene from "@/components/Scene";
 
 export default function ReportsPage() {
   const { lang, t } = useI18n();
@@ -39,7 +40,8 @@ export default function ReportsPage() {
               </div>
             )}
           </div>
-          <div className="photo p-cold" style={{ minHeight: 160 }}>
+          <div className="photo" style={{ minHeight: 170 }}>
+            <Scene kind="cold" />
             <div className="t">{t("insight")}</div>
             <div className="s">{t("insight_p")}</div>
           </div>

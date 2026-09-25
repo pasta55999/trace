@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 import AppShell from "@/components/AppShell";
 import { api, type AssetRow, type Measure } from "@/lib/api";
 import { fmt, useI18n } from "@/lib/i18n";
-import { assetClass, riskLevel } from "@/lib/risk";
+import { riskLevel } from "@/lib/risk";
+import Scene, { sceneFor } from "@/components/Scene";
 import { useStatus } from "@/lib/useStatus";
 
 export default function Portfolio() {
@@ -38,7 +39,8 @@ export default function Portfolio() {
           <div className="stack">
             {list.map((x) => { const r = riskLevel(x); return (
               <button key={x.asset_id} onClick={() => { setSel(x.asset_id); setTab("overview"); }} style={{ all: "unset", cursor: "pointer", display: "block", width: "100%" }}>
-                <div className={`photo ${assetClass(x.asset_type)}`} style={{ minHeight: 96, outline: a?.asset_id === x.asset_id ? "1px solid var(--accent)" : "none" }}>
+                <div className="photo" style={{ minHeight: 110, outline: a?.asset_id === x.asset_id ? "1px solid var(--accent)" : "none" }}>
+                  <Scene kind={sceneFor(x.asset_type)} />
                   <div className="row" style={{ justifyContent: "space-between" }}><div className="t">{x.description}</div><span className={`chip ${r}`}>{t(`risk_${r}` as "risk_high")}</span></div>
                   <div className="s num">{t("loan")} {fac ? "" : ""}{x.facilities?.[0]?.facility_id} · AED {fmt(x.outstanding_allocated_aed, lang, true)} · {lang === "ar" ? x.borrower_ar : x.borrower}</div>
                   <div className="row small muted"><span>{x.asset_id}</span><span>·</span><span>{x.precision}</span>{x.attributes?.switchboard_location && <><span>·</span><span>{t("attr_switchboard")}: {x.attributes.switchboard_location}</span></>}</div>
@@ -50,7 +52,8 @@ export default function Portfolio() {
 
         {a && (
           <div className="card">
-            <div className={`photo ${assetClass(a.asset_type)}`} style={{ minHeight: 170 }}>
+            <div className="photo" style={{ minHeight: 190 }}>
+              <Scene kind={sceneFor(a.asset_type)} />
               <div className="row" style={{ justifyContent: "space-between" }}><h2 style={{ color: "var(--ink)", fontSize: 20, margin: 0 }}>{a.description} · {a.asset_id}</h2><span className={`chip ${riskLevel(a)}`}>{t(`risk_${riskLevel(a)}` as "risk_high")}</span></div>
               <div className="s num">{lang === "ar" ? a.borrower_ar : a.borrower} · {a.sector} · {t("loan")} {fac?.facility_id} · AED {fmt(a.outstanding_allocated_aed, lang)} {t("outstanding").toLowerCase()}</div>
             </div>

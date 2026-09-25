@@ -18,12 +18,6 @@ export function riskLevel(a: AssetRow): RiskLevel {
   return "low";
 }
 
-export const sectorClass = (sector: string): string =>
-  /manufact/i.test(sector) ? "p-factory" : /transport|storage/i.test(sector) ? "p-warehouse" : /wholesale|distrib/i.test(sector) ? "p-dist" : "p-cold";
-
-export const assetClass = (type: string): string =>
-  type === "industrial_building" ? "p-factory" : type === "warehouse" ? "p-warehouse" : type === "distribution_centre" ? "p-dist" : "p-cold";
-
 export function greetingKey(): "good_morning" | "good_afternoon" | "good_evening" {
   const h = new Date().getHours();
   return h < 12 ? "good_morning" : h < 18 ? "good_afternoon" : "good_evening";
