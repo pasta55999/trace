@@ -25,11 +25,15 @@ class AnalystAgent(Agent):
 
     name = "analyst"
 
+    GREETINGS = ("hello", "hi ", "hi!", "hey", "مرحبا", "مرحباً", "السلام", "أهلا", "أهلاً", "صباح", "مساء", "help", "مساعدة", "what can you")
+
     def intent(self, q: str) -> str:
-        low = q.lower()
+        low = q.lower().strip()
         for name, words in self.genome.param("intents", {}).items():
             if any(w in low for w in words):
                 return name
+        if any(low.startswith(g) or g in low for g in self.GREETINGS) or len(low.split()) <= 2:
+            return "help"
         return "flood_ranking"
 
     def ask(self, question: str, run: dict[str, Any], diff: dict[str, Any] | None = None) -> dict[str, Any]:
@@ -37,7 +41,13 @@ class AnalystAgent(Agent):
         intent = self.intent(question)
         self.decide("question", intent, lang=lang)
         refs: dict[str, Any] = {}
-        if intent == "flood_ranking":
+        if intent == "help":
+            cov = {"assets": len(run["assets"]), "in_footprint": len(run["aggregation"]["concentration"]["assets_in_footprint"])}
+            refs["result://coverage"] = cov
+            text = (f"مرحباً. أتابع {cov['assets']} أصول في هذا السيناريو التوضيحي، منها {cov['in_footprint']} داخل نطاق الفيضان نفسه. يمكنك أن تسألني: ما العقارات الأكثر عرضة للفيضانات؟ هل هناك تركز؟ ما هي العناصر غير المعروفة؟ ما الذي تغير؟ كم هو المؤمن؟ لا أذكر إلا أرقاماً تأتي من محركات الحساب."
+                    if lang == "ar" else
+                    f"Hello. I am tracking {cov['assets']} assets in this illustrative scenario, {cov['in_footprint']} of them inside the same flood footprint. You can ask me: which properties are most exposed to flooding? Is there concentration? What is unknown? What changed? How much is insured? I only quote numbers that come from the calculation engines.")
+        elif intent == "flood_ranking":
             rows = sorted([a for a in run["assets"] if _num(a["flood_depth_m"]) is not None], key=lambda a: _num(a["physical_damage_total_aed"]) or 0, reverse=True)
             unknown = [a for a in run["assets"] if _num(a["flood_depth_m"]) is None]
             lines = []

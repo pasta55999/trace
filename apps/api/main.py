@@ -71,9 +71,12 @@ def start() -> dict[str, Any]:
 
 
 @app.get("/investigation/status")
-def status() -> dict[str, Any]:
+def status(autostart: bool = False) -> dict[str, Any]:
     if not orch.inv.last_run_id:
-        raise HTTPException(404, "no investigation yet; POST /investigation/start")
+        if autostart:
+            orch.start()
+        else:
+            raise HTTPException(404, "no investigation yet; POST /investigation/start")
     return orch.status()
 
 
