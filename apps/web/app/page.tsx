@@ -84,9 +84,9 @@ export default function Showcase() {
 
           <section id="demo" className="show-section">
             <div className="eyebrow">Demo</div>
-            <h2>Four minutes, start to finish.</h2>
+            <h2>Under four minutes, start to finish.</h2>
             <video className="video" controls preload="metadata" poster="/demo-poster.png"><source src="/demo.mp4" type="video/mp4" />Your browser does not support the video tag.</video>
-            <p className="muted small">Drop <code>demo.mp4</code> into <code>apps/web/public/</code> and it plays here.</p>
+            <p className="muted small">Upload a portfolio, answer the agents, hear the assistant in Arabic, run an evolution cycle, export the bilingual brief.</p>
           </section>
 
           <section className="show-section">
