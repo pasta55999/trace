@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 import { useI18n } from "@/lib/i18n";
 import Chatbot from "./Chatbot";
+import Logo from "./Logo";
 
 const ICONS: Record<string, string> = { home: "⌂", portfolio: "▦", risk: "◔", agents: "✦", reports: "▤", settings: "⚙" };
 
@@ -18,7 +19,7 @@ export default function AppShell({ children, title, subtitle }: { children: Reac
   return (
     <div className="shell">
       <aside className="sidebar">
-        <Link href="/" className="wordmark" style={{ padding: "4px 12px 18px", display: "block" }}>trace</Link>
+        <Link href="/" className="logo"><Logo size={26} /></Link>
         {links.map(([href, icon, label]) => (
           <Link key={href} href={href} className={path === href ? "active" : ""}><span className="icon">{ICONS[icon]}</span>{label}</Link>
         ))}

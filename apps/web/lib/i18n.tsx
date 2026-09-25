@@ -8,8 +8,8 @@ const STRINGS = {
     app: "trace", synthetic: "Synthetic demo data — illustrative scenario, not an operational prediction",
     // landing
     hero_1: "Climate risks.", hero_2: "Financial impact.", hero_3: "A clearer picture.",
-    hero_p: "We connect your financial portfolio with climate data — so you can see what's exposed, what it could cost, and what to do about it. Arabic and English, end to end.",
-    get_started: "Get started", landing_preview: "Your risk at a glance",
+    hero_p: "See what's exposed. Know what it costs. Act first.",
+    get_started: "Get started", landing_preview: "Your risk, at a glance",
     // nav
     nav_home: "Home", nav_portfolio: "Portfolio", nav_risk: "Risk Analysis", nav_agents: "AI Agents", nav_reports: "Reports", nav_settings: "Settings", bank_analyst: "Bank Analyst",
     // dashboard
@@ -39,7 +39,7 @@ const STRINGS = {
   ar: {
     app: "trace", synthetic: "بيانات عرض اصطناعية — سيناريو توضيحي، وليس تنبؤاً تشغيلياً",
     hero_1: "مخاطر المناخ.", hero_2: "الأثر المالي.", hero_3: "صورة أوضح.",
-    hero_p: "نربط محفظتك المالية ببيانات المناخ — لترى ما هو معرّض، وكم قد يكلف، وما الذي يجب فعله. بالعربية والإنجليزية من البداية إلى النهاية.",
+    hero_p: "اعرف ما هو معرّض. اعرف التكلفة. تحرّك أولاً.",
     get_started: "ابدأ الآن", landing_preview: "مخاطرك في لمحة",
     nav_home: "الرئيسية", nav_portfolio: "المحفظة", nav_risk: "تحليل المخاطر", nav_agents: "وكلاء الذكاء الاصطناعي", nav_reports: "التقارير", nav_settings: "الإعدادات", bank_analyst: "محلل مصرفي",
     good_morning: "صباح الخير", good_afternoon: "مساء الخير", good_evening: "مساء الخير", snapshot: "إليك لمحة عن مخاطر المناخ في محفظتك.", last_updated: "آخر تحديث",

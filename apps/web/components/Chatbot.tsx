@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { api, type Answer } from "@/lib/api";
 import { useI18n, type Lang } from "@/lib/i18n";
+import Logo from "./Logo";
 
 /* Minimal typings for the Web Speech API (Chrome / Edge). */
 interface SRResultEvent { results: ArrayLike<ArrayLike<{ transcript: string }>> }
@@ -93,7 +94,7 @@ export default function Chatbot() {
     <div className="chat" role="dialog" aria-label={t("chat_title")}>
       <div className="head">
         <span className="avatar">✦</span>
-        <div><div>{t("chat_title")}</div><div className="status">{listening ? t("listening") : t("chat_sub")}</div></div>
+        <div><Logo size={16} /><div className="status">{listening ? t("listening") : t("chat_sub")}</div></div>
         <div className="row" style={{ marginInlineStart: "auto" }}>
           <div className="tabs" title="microphone language">
             <button className={micLang === "en" ? "on" : ""} onClick={() => setMicLang("en")}>EN</button>
