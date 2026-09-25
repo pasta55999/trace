@@ -1,56 +1,38 @@
-/** Atmospheric SVG scenes (factory / warehouse / distribution / cold store) used as card backdrops. */
+/** Light, editorial SVG scenes (factory / warehouse / distribution / cold store) used as card backdrops and thumbnails. */
 export type SceneKind = "factory" | "warehouse" | "dist" | "cold";
 
 export const sceneFor = (sectorOrType: string): SceneKind =>
   /manufact|industrial/i.test(sectorOrType) ? "factory" : /transport|storage|warehouse/i.test(sectorOrType) ? "warehouse" : /wholesale|distrib/i.test(sectorOrType) ? "dist" : "cold";
 
-const PALETTE: Record<SceneKind, { sky: [string, string]; glow: string; ground: string }> = {
-  factory: { sky: ["#2b2a3a", "#0a0f16"], glow: "#f5b84a", ground: "#0c1218" },
-  warehouse: { sky: ["#13303b", "#0a0f16"], glow: "#7fe0ea", ground: "#0b1117" },
-  dist: { sky: ["#241f3f", "#0a0f16"], glow: "#8b7cf6", ground: "#0b1017" },
-  cold: { sky: ["#10263f", "#0a0f16"], glow: "#4f8df7", ground: "#0a1119" },
+const P: Record<SceneKind, { sky: [string, string]; bld: string; bld2: string; accent: string; ground: string }> = {
+  factory: { sky: ["#f3ecdf", "#e6d9c3"], bld: "#b9a98f", bld2: "#d9cdb6", accent: "#d99a2b", ground: "#e9dfcb" },
+  warehouse: { sky: ["#e6f0f2", "#cfe1e6"], bld: "#98b1b7", bld2: "#c6d8dc", accent: "#3f8c92", ground: "#d9e6e9" },
+  dist: { sky: ["#ecebf4", "#d9d8ea"], bld: "#a2a3c2", bld2: "#cfcfe3", accent: "#7d7fc4", ground: "#e2e1ee" },
+  cold: { sky: ["#e8f0f8", "#d3e2f1"], bld: "#97b0cc", bld2: "#c6d7e8", accent: "#3b7dd8", ground: "#dce7f3" },
 };
 
-export default function Scene({ kind, className }: { kind: SceneKind; className?: string }) {
-  const p = PALETTE[kind];
-  const id = `sky-${kind}`;
+export default function Scene({ kind, style }: { kind: SceneKind; style?: React.CSSProperties }) {
+  const p = P[kind];
+  const id = `sc-${kind}`;
   return (
-    <svg className={className} viewBox="0 0 400 200" preserveAspectRatio="xMidYMid slice" aria-hidden style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}>
-      <defs>
-        <linearGradient id={id} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor={p.sky[0]} /><stop offset="1" stopColor={p.sky[1]} /></linearGradient>
-        <radialGradient id={`${id}-g`} cx="0.5" cy="0.5" r="0.5"><stop offset="0" stopColor={p.glow} stopOpacity=".55" /><stop offset="1" stopColor={p.glow} stopOpacity="0" /></radialGradient>
-      </defs>
+    <svg viewBox="0 0 400 200" preserveAspectRatio="xMidYMid slice" aria-hidden style={{ position: "absolute", inset: 0, width: "100%", height: "100%", ...style }}>
+      <defs><linearGradient id={id} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor={p.sky[0]} /><stop offset="1" stopColor={p.sky[1]} /></linearGradient></defs>
       <rect width="400" height="200" fill={`url(#${id})`} />
-      <ellipse cx={kind === "factory" ? 300 : 110} cy="70" rx="150" ry="70" fill={`url(#${id}-g)`} />
-      {/* stars / dust */}
-      {[30, 80, 140, 210, 260, 330, 370].map((x, i) => <circle key={x} cx={x} cy={20 + (i * 13) % 50} r=".8" fill="#fff" opacity=".45" />)}
-      <g fill="#141d27" stroke="rgba(255,255,255,.16)" strokeWidth=".8">
-        {kind === "factory" && (<>
-          <rect x="40" y="110" width="120" height="70" /><rect x="170" y="125" width="90" height="55" /><rect x="270" y="100" width="60" height="80" />
-          <rect x="60" y="60" width="10" height="55" /><rect x="90" y="70" width="10" height="45" /><rect x="290" y="55" width="12" height="50" />
-          <path d="M170 125 l22 -18 l23 18 l22 -18 l23 18" fill="none" />
-          <circle cx="65" cy="52" r="6" fill="rgba(255,255,255,.06)" stroke="none" /><circle cx="296" cy="46" r="7" fill="rgba(255,255,255,.05)" stroke="none" />
-        </>)}
-        {kind === "warehouse" && (<>
-          <path d="M30 180 V120 Q30 95 60 95 H220 Q250 95 250 120 V180 Z" /><rect x="262" y="130" width="110" height="50" />
-          <rect x="60" y="140" width="30" height="40" fill="rgba(127,224,234,.10)" stroke="none" /><rect x="110" y="140" width="30" height="40" fill="rgba(127,224,234,.08)" stroke="none" /><rect x="160" y="140" width="30" height="40" fill="rgba(127,224,234,.10)" stroke="none" />
-          <path d="M40 120 H240" stroke="rgba(255,255,255,.12)" />
-        </>)}
-        {kind === "dist" && (<>
-          <rect x="20" y="120" width="200" height="60" /><rect x="240" y="135" width="140" height="45" />
-          {[40, 80, 120, 160].map((x) => <rect key={x} x={x} y="150" width="24" height="30" fill="rgba(139,124,246,.14)" stroke="none" />)}
-          <rect x="250" y="120" width="40" height="15" rx="2" /><rect x="300" y="120" width="40" height="15" rx="2" />
-          <path d="M0 185 H400" stroke="rgba(139,124,246,.35)" strokeWidth="1" />
-        </>)}
-        {kind === "cold" && (<>
-          <rect x="60" y="105" width="170" height="75" /><rect x="250" y="125" width="100" height="55" />
-          <rect x="70" y="95" width="150" height="10" fill="rgba(79,141,247,.25)" stroke="none" />
-          {[90, 130, 170].map((x) => <rect key={x} x={x} y="125" width="22" height="55" fill="rgba(79,141,247,.12)" stroke="none" />)}
-          <circle cx="300" cy="115" r="9" fill="rgba(79,141,247,.2)" stroke="none" />
-        </>)}
+      <circle cx="320" cy="50" r="26" fill="#fff" opacity=".55" />
+      <g fill={p.bld2}>
+        {kind === "factory" && (<><rect x="30" y="112" width="120" height="70" /><rect x="160" y="126" width="100" height="56" /><rect x="272" y="104" width="70" height="78" /><rect x="52" y="60" width="10" height="54" /><rect x="84" y="72" width="10" height="42" /><rect x="292" y="58" width="12" height="48" /></>)}
+        {kind === "warehouse" && (<><path d="M24 182 V122 Q24 96 56 96 H226 Q258 96 258 122 V182 Z" /><rect x="272" y="132" width="106" height="50" /></>)}
+        {kind === "dist" && (<><rect x="16" y="120" width="210" height="62" /><rect x="244" y="136" width="140" height="46" /><rect x="254" y="120" width="42" height="16" rx="3" /><rect x="304" y="120" width="42" height="16" rx="3" /></>)}
+        {kind === "cold" && (<><rect x="56" y="104" width="176" height="78" /><rect x="252" y="126" width="104" height="56" /><rect x="66" y="94" width="156" height="10" fill={p.accent} opacity=".45" /></>)}
       </g>
-      <rect x="0" y="180" width="400" height="20" fill={p.ground} />
-      <path d="M0 180 H400" stroke={p.glow} strokeOpacity=".35" strokeWidth=".8" />
+      <g fill={p.bld} opacity=".9">
+        {kind === "factory" && (<><rect x="40" y="130" width="100" height="52" /><path d="M160 126 l25 -20 l25 20 l25 -20 l25 20 V140 H160 Z" /></>)}
+        {kind === "warehouse" && (<><rect x="56" y="140" width="34" height="42" /><rect x="112" y="140" width="34" height="42" /><rect x="168" y="140" width="34" height="42" /><path d="M34 122 H248" stroke={p.bld} strokeWidth="3" /></>)}
+        {kind === "dist" && (<>{[36, 80, 124, 168].map((x) => <rect key={x} x={x} y="150" width="26" height="32" />)}</>)}
+        {kind === "cold" && (<>{[86, 128, 170].map((x) => <rect key={x} x={x} y="126" width="24" height="56" />)}</>)}
+      </g>
+      <rect x="0" y="182" width="400" height="18" fill={p.ground} />
+      <path d="M0 182 H400" stroke={p.accent} strokeOpacity=".5" strokeWidth="1.2" />
     </svg>
   );
 }

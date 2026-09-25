@@ -1,101 +1,168 @@
 "use client";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import AppShell from "@/components/AppShell";
-import { BarChart, BarLabels } from "@/components/Charts";
 import Scene, { sceneFor } from "@/components/Scene";
-import { fmt, useI18n } from "@/lib/i18n";
+import UAEMap, { type Marker } from "@/components/UAEMap";
+import type { Activity, AssetRow, Status } from "@/lib/api";
+import { fmt, useI18n, type Lang } from "@/lib/i18n";
 import { greetingKey, mid, riskLevel } from "@/lib/risk";
 import { useStatus } from "@/lib/useStatus";
 
-const PINS: Record<string, [number, number]> = { "A-001": [46, 50], "A-002": [60, 42], "A-003": [42, 30], "A-004": [14, 78] };
+const hhmm = (iso: string, lang: Lang) => new Date(iso).toLocaleTimeString(lang === "ar" ? "ar-AE" : "en-GB", { hour: "2-digit", minute: "2-digit" });
+
+function Rail({ s, lang, t }: { s: Status; lang: Lang; t: (k: never) => string }) {
+  const T = t as (k: string) => string;
+  const AGENT_STEPS = [
+    ["intake", "documents_extracted", `${T("ag_intake")} · ${s.documents.length}`],
+    ["extract", "documents_extracted", `${T("ag_extract")} · ${s.documents.reduce((n, d) => n + d.fields, 0)}`],
+    ["resolve", "location_committed", `${T("ag_resolve")} · ${s.coverage.assets_location_confirmed}/${s.coverage.assets_total}`],
+    ["gap", "question_created", `${T("ag_gap")} · ${s.questions.length}`],
+    ["case", "case_opened", `${T("ag_critic")}`],
+  ] as const;
+  const firstAt = (action: string) => s.activity.find((a) => a.action === action)?.at;
+  const recent = s.activity.slice().reverse().filter((a) => !["state"].includes(a.action)).slice(0, 6);
+  const labelFor = (a: Activity) => ({ portfolio_loaded: "Portfolio loaded", documents_extracted: "Documents extracted", location_committed: `Location resolved · ${a.asset_id ?? ""}`, question_created: `Question raised · ${a.asset_id ?? ""}`, scenario_run: "Scenario computed", case_opened: "Review case opened", question_answered: "Answer recorded", case_decided: "Decision recorded" } as Record<string, string>)[a.action] ?? a.action;
+  return (
+    <>
+      <div className="card flat">
+        <div className="head"><span className="ico-box">✦</span><div><h2>{T("intel")}</h2><div className="sub">{T("intel_sub")}</div></div></div>
+        <div className="list feed">
+          {AGENT_STEPS.map(([k, action, label]) => { const at = firstAt(action); const pending = k === "gap" && s.questions.length > 0; return (
+            <div className="item" key={k}><span className={`tick ${pending ? "amber" : at ? "" : "grey"}`}>{pending ? "!" : at ? "✓" : "○"}</span><div><div className="t">{label}</div></div><span className="time num">{at ? hhmm(at, lang) : "—"}</span></div>
+          ); })}
+        </div>
+      </div>
+      <div className="card flat">
+        <div className="head"><h2>{T("recent")}</h2><Link href="/agents" className="link right">{T("view_all")} →</Link></div>
+        <div className="list feed">
+          {recent.map((a, i) => <div className="item" key={i}><span className={`tick ${a.actor.startsWith("user") ? "sea" : a.action.includes("question") ? "amber" : ""}`}>{a.actor.startsWith("user") ? "→" : "✓"}</span><div><div className="t">{labelFor(a)}</div><div className="m">{a.actor}</div></div><span className="time num">{hhmm(a.at, lang)}</span></div>)}
+        </div>
+      </div>
+      <div className="card flat">
+        <div className="head"><h2>{T("bilingual_docs")}</h2><Link href="/portfolio" className="link right">{T("view_all")} →</Link></div>
+        {s.documents.slice(0, 3).map((d) => (
+          <div className="row" key={d.id} style={{ padding: "6px 0" }}>
+            <span className="ico-box grey" style={{ width: 28, height: 28, fontSize: 12 }}>▤</span>
+            <div style={{ minWidth: 0 }}><div className="small" dir="auto" style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: 200 }}>{d.title}</div><div className="xs muted">{d.related_collateral} · {d.fields} fields{d.firewall_flags.length ? " · quarantined text" : ""}</div></div>
+            <span className={`chip ${d.language === "ar" ? "accent" : ""}`} style={{ marginInlineStart: "auto" }}>{d.language === "ar" ? T("arabic") : d.language === "en" ? T("english") : "ar/en"}</span>
+          </div>
+        ))}
+      </div>
+      <Link href="/reports" className="cta-card">
+        <Scene kind="cold" style={{ opacity: .9 }} />
+        <div style={{ background: "rgba(255,255,255,.85)", borderRadius: 12, padding: 12 }}>
+          <div style={{ fontWeight: 600 }}>{T("cta_title")}</div>
+          <div className="small muted" style={{ margin: "4px 0 10px" }}>{T("cta_sub")}</div>
+          <span className="btn sm">{T("cta_btn")} →</span>
+        </div>
+      </Link>
+    </>
+  );
+}
 
 export default function Dashboard() {
   const { lang, t, prefs } = useI18n();
-  const { status: s, busy, error, restart } = useStatus();
-  const run = s?.run ?? null;
-  const assets = run?.assets ?? [];
-  const high = assets.filter((a) => riskLevel(a) === "high");
-  const sectors = new Map<string, { n: number; outstanding: number; worst: string }>();
-  for (const a of assets) {
-    const g = sectors.get(a.sector) ?? { n: 0, outstanding: 0, worst: "low" };
-    g.n += 1; g.outstanding += a.outstanding_allocated_aed;
-    const r = riskLevel(a); if (r === "high" || (r === "medium" && g.worst !== "high") || (r === "unknown" && g.worst === "low")) g.worst = r;
-    sectors.set(a.sector, g);
-  }
-  const bars = assets.map((a) => { const v = a.physical_damage_total_aed; const r = typeof v === "object" && "low" in v ? v : null; return { label: a.asset_id, value: mid(v), low: r?.low, high: r?.high }; });
-  const c = run?.aggregation.concentration;
+  const router = useRouter();
+  const { status: s, error } = useStatus();
+  const [mapTab, setMapTab] = useState<"uae" | "region" | "all">("uae");
+  if (!s) return <AppShell><div className="empty">{error ?? t("running")}</div></AppShell>;
+  const run = s.run!; const assets = run.assets; const c = run.aggregation.concentration;
+  const total = run.aggregation.portfolio_outstanding_aed;
+  const inFoot = assets.filter((a) => c.assets_in_footprint.includes(a.asset_id));
+  const exposurePct = c.share_of_portfolio_outstanding * 100;
+  const sectors = new Set(assets.map((a) => a.sector)).size;
+  const locByAsset = new Map(s.locations.map((l) => [l.asset_id, l]));
+  const markers: Marker[] = assets.map((a) => { const l = locByAsset.get(a.asset_id); return { id: a.asset_id, lon: l?.lon ?? null, lat: l?.lat ?? null, level: riskLevel(a), label: `${a.asset_id} · ${a.description}`, district: l?.district_id }; });
+  const dmg = (rows: AssetRow[]) => rows.reduce((x, a) => x + (mid(a.physical_damage_total_aed) ?? 0), 0);
+  const impactRows = [
+    { k: "hazard_flood", ico: "◍", cls: "sea", n: inFoot.length, exposure: c.outstanding_in_footprint_aed, impact: dmg(inFoot) },
+    { k: "hazard_heat", ico: "☼", cls: "amber", n: assets.filter((a) => a.precision !== "unresolved").length, exposure: null, impact: null },
+    { k: "hazard_storm", ico: "≋", cls: "grey", n: 0, exposure: null, impact: null },
+    { k: "hazard_sea", ico: "◠", cls: "grey", n: 0, exposure: null, impact: null },
+  ];
+  const maxImpact = Math.max(1, ...impactRows.map((r) => r.impact ?? 0));
+  const featured = assets.slice().sort((a, b) => (mid(b.physical_damage_total_aed) ?? -1) - (mid(a.physical_damage_total_aed) ?? -1)).slice(0, 3);
 
   return (
-    <AppShell title={`${t(greetingKey())}, ${prefs.name}`} subtitle={t("snapshot")}>
-      {error && <div className="card" style={{ color: "var(--high)" }}>{error}</div>}
-      {!s ? <div className="empty"><div className="muted">{t("running")}</div></div> : (
-        <div className="stack">
-          <div className="grid cols-4">
-            <div className="card kpi"><span className="ico">◈</span><div><div className="label">{t("kpi_portfolio")}</div><div className="value num">AED {fmt(run?.aggregation.portfolio_outstanding_aed ?? 0, lang, true)}</div><div className="foot">{s.investigation.state} · {t("last_updated")} <span className="num">{new Date().toLocaleTimeString(lang === "ar" ? "ar-AE" : "en-GB", { hour: "2-digit", minute: "2-digit" })}</span></div></div></div>
-            <div className="card kpi"><span className="ico">▦</span><div><div className="label">{t("kpi_assets")}</div><div className="value num">{s.coverage.assets_total}</div><div className="foot">{t("across_sectors", { n: sectors.size })} · {t("confirmed_of", { a: s.coverage.assets_location_confirmed, b: s.coverage.assets_total })}</div></div></div>
-            <div className="card kpi"><span className="ico" style={{ background: "rgba(255,107,107,.14)", color: "var(--high)" }}>▲</span><div><div className="label">{t("kpi_high")}</div><div className="value num">{high.length}</div><div className="foot" style={{ color: "var(--high)" }}>{t("needs_attention")} · AED {fmt(high.reduce((x, a) => x + a.outstanding_allocated_aed, 0), lang, true)}</div></div></div>
-            <div className="card kpi"><span className="ico" style={{ background: "rgba(71,201,138,.14)", color: "var(--low)" }}>✓</span><div><div className="label">{t("kpi_actions")}</div><div className="value num">{s.questions.length + (c ? 1 : 0)}</div><div className="foot">{t("open_questions_n", { n: s.questions.length })} · {s.cases.length} case</div></div></div>
-          </div>
+    <AppShell rail={<Rail s={s} lang={lang} t={t as never} />}>
+      <div className="hero">
+        <div><h1>{t(greetingKey())}, {prefs.name}.</h1><div className="sub">{t("overview_sub")}</div></div>
+        <div className="right"><span className="live">{t("live")}</span><span>{t("last_updated")} <span className="num">{hhmm(s.activity.at(-1)?.at ?? new Date().toISOString(), lang)}</span></span></div>
+      </div>
+      <div className="note" style={{ marginBottom: 12 }}>{t("synthetic")}</div>
 
-          <div className="grid cols-2-1">
-            <div className="card">
-              <div className="row" style={{ justifyContent: "space-between" }}><h2>{t("by_sector")}</h2><Link href="/portfolio" className="muted small">{t("view_details")} →</Link></div>
-              <div className="grid cols-3" style={{ height: "calc(100% - 34px)" }}>
-                {[...sectors.entries()].map(([sec, g]) => (
-                  <Link key={sec} href="/portfolio" className="photo" style={{ minHeight: 210 }}>
-                    <Scene kind={sceneFor(sec)} />
-                    <div className="t">{sec}</div>
-                    <div className="s num">AED {fmt(g.outstanding, lang, true)} · {g.n} {t("properties")}</div>
-                    <span className={`chip ${g.worst}`}>{t(`risk_${g.worst}` as "risk_high")}</span>
-                  </Link>
-                ))}
-              </div>
-            </div>
-            <div className="card">
-              <h2>{t("outlook")}</h2>
-              <div className="map">
-                <div className="grid-lines" /><div className="flood" /><div className="heat" />
-                {assets.map((a) => { const p = PINS[a.asset_id] ?? [50, 50]; const r = riskLevel(a); return <div key={a.asset_id} className={`pin ${r === "unknown" ? "dashed" : ""}`} style={{ left: `${p[0]}%`, top: `${p[1]}%` }}><span className="dot" style={{ background: `var(--${r})` }} />{a.asset_id}</div>; })}
-                <span className="tag">UAE · {run ? (lang === "ar" ? run.scenario.label_ar : run.scenario.label_en) : ""}</span>
-                <div className="legend"><span><span className="dot" style={{ background: "var(--blue)" }} /> {t("flood_risk")}</span><span><span className="dot" style={{ background: "var(--high)" }} /> {t("heat_stress")}</span><span>{t("sketch")}</span></div>
-              </div>
-            </div>
-          </div>
+      <div className="grid cols-4">
+        <div className="card kpi"><div className="row"><span className="ico-box">◈</span><span className="label">{t("kpi_portfolio")}</span></div><div className="value num">AED {fmt(total, lang, true)}</div><div className="foot"><span>{t("monitored")}</span><span className="delta">{assets.length} {t("props_fac").toLowerCase()}</span></div></div>
+        <div className="card kpi"><div className="row"><span className="ico-box">◫</span><span className="label">{t("kpi_linked")}</span></div><div className="value num">{s.coverage.assets_location_confirmed}<span className="muted" style={{ fontSize: 16 }}> / {s.coverage.assets_total}</span></div><div className="foot"><span>{t("props_fac")}</span><span className="delta">{sectors} sectors</span></div></div>
+        <div className="card kpi"><div className="row"><span className="ico-box amber">△</span><span className="label">{t("kpi_exposure")}</span></div><div className="value num">{exposurePct.toFixed(1)}%</div><div className="foot"><span>{t("potentially")}</span><span className="delta bad">AED {fmt(c.outstanding_in_footprint_aed, lang, true)}</span></div></div>
+        <div className="card kpi"><div className="row"><span className="ico-box sea">▤</span><span className="label">{t("kpi_reviews")}</span></div><div className="value num">{s.questions.length + s.cases.filter((k) => k.status !== "decided").length}</div><div className="foot"><span>{t("requiring")}</span><span className="delta">{t("open_questions_n", { n: s.questions.length })}</span></div></div>
+      </div>
 
-          <div className="grid cols-2-1">
-            <div className="card">
-              <div className="row" style={{ justifyContent: "space-between" }}><h2>{t("exposure_chart")}</h2><span className="muted small">AED</span></div>
-              <BarChart rows={bars} /><BarLabels rows={bars} />
-            </div>
-            <div className="card">
-              <h2>{t("top_hazards")}</h2>
-              <div className="stack">
-                {[
-                  { k: "hazard_flood", pct: c && run ? c.share_of_portfolio_outstanding : 0, note: `${c?.assets_in_footprint.length ?? 0} ${t("in_footprint")}` },
-                  { k: "hazard_heat", pct: null, note: "district-level indicator only (25 km)" },
-                  { k: "hazard_storm", pct: null, note: t("not_assessed") },
-                  { k: "hazard_sea", pct: null, note: t("not_assessed") },
-                ].map((h) => (
-                  <div key={h.k}>
-                    <div className="row" style={{ justifyContent: "space-between" }}><span>{t(h.k as "hazard_flood")}</span><span className="num muted small">{h.pct === null ? "—" : `${(h.pct * 100).toFixed(0)}%`}</span></div>
-                    <div className="bar"><i style={{ width: `${(h.pct ?? 0) * 100}%` }} /></div>
-                    <div className="muted small">{h.note}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
+      <div className="grid cols-map" style={{ marginTop: 14 }}>
+        <div className="card">
+          <div className="head"><div><h2>{t("map_title")}</h2><div className="sub">{t("map_sub")}</div></div>
+            <div className="right"><div className="tabs">{(["uae", "region", "all"] as const).map((k) => <button key={k} className={mapTab === k ? "on" : ""} onClick={() => setMapTab(k)}>{k === "uae" ? "UAE" : k === "region" ? "Region" : "All"}</button>)}</div></div></div>
+          <div className="mapwrap">
+            <UAEMap markers={markers} onSelect={(id) => router.push(`/portfolio?asset=${id}`)} />
+            <span className="caption">{lang === "ar" ? run.scenario.label_ar : run.scenario.label_en}</span>
+            <div className="legend"><span><span className="dot" style={{ background: "var(--red)" }} /> {t("risk_high")}</span><span><span className="dot" style={{ background: "var(--amber)" }} /> {t("risk_medium")}</span><span><span className="dot" style={{ background: "var(--sage)" }} /> {t("risk_low")}</span><span><span className="dot" style={{ background: "var(--faint)" }} /> {t("risk_unknown")}</span></div>
+            <span className="north">N ↑</span>
           </div>
-
-          {c && (
-            <div className="card" style={{ borderColor: "rgba(255,107,107,.35)" }}>
-              <div className="row" style={{ justifyContent: "space-between" }}>
-                <div><h2 style={{ color: "var(--high)" }}>{t("concentration")}</h2><div>{lang === "ar" ? run!.aggregation.diversification_warning_ar : run!.aggregation.diversification_warning_en}</div><div className="muted small num">{c.borrowers.join(" · ")} — AED {fmt(c.outstanding_in_footprint_aed, lang)} ({(c.share_of_portfolio_outstanding * 100).toFixed(1)}% {t("share")})</div></div>
-                <div className="row"><Link href="/risk" className="btn sm">{t("nav_risk")} →</Link><button className="btn ghost sm" onClick={restart} disabled={busy}>{busy ? t("running") : t("restart")}</button></div>
-              </div>
-            </div>
-          )}
         </div>
-      )}
+        <div className="card">
+          <div className="head"><div><h2>{t("signals")}</h2><div className="sub">{t("signals_sub")}</div></div></div>
+          <div className="list">
+            {impactRows.map((r) => (
+              <Link href="/risk" className="item" key={r.k}>
+                <span className={`ico-box ${r.cls}`}>{r.ico}</span>
+                <div><div className="title">{t(r.k as "hazard_flood")}</div><div className="meta num">{r.n} {t("assets_col").toLowerCase()} · {r.exposure !== null ? `AED ${fmt(r.exposure, lang, true)}` : t("not_assessed")}</div></div>
+                <span className="chev">›</span>
+              </Link>
+            ))}
+          </div>
+          {c.sectors.length > 1 && <div className="chip high" style={{ marginTop: 10 }}>⚠ {lang === "ar" ? run.aggregation.diversification_warning_ar : run.aggregation.diversification_warning_en}</div>}
+        </div>
+      </div>
+
+      <div className="card" style={{ marginTop: 14 }}>
+        <div className="head"><div><h2>{t("impact_title")}</h2><div className="sub">{t("impact_sub")}</div></div><div className="right"><span className="tabs"><button className="on">{t("all_hazards")}</button></span></div></div>
+        <table>
+          <thead><tr><th>{t("hazard")}</th><th>{t("assets_col")}</th><th>{t("exposure_col")}</th><th style={{ width: "40%" }}>{t("impact_col")}</th><th></th></tr></thead>
+          <tbody>
+            {impactRows.map((r) => (
+              <tr key={r.k}>
+                <td><span className="row"><span className={`ico-box ${r.cls}`} style={{ width: 26, height: 26, fontSize: 12 }}>{r.ico}</span>{t(r.k as "hazard_flood")}</span></td>
+                <td className="num">{r.n}</td>
+                <td className="num">{r.exposure !== null ? `AED ${fmt(r.exposure, lang, true)}` : <span className="muted">—</span>}</td>
+                <td>{r.impact !== null ? <div className={`bar ${r.cls === "sea" ? "" : r.cls}`}><i style={{ width: `${(r.impact / maxImpact) * 100}%` }} /></div> : <div className="bar"><i style={{ width: 0 }} /></div>}</td>
+                <td className="num muted small">{r.impact !== null ? `AED ${fmt(r.impact, lang, true)}` : t("not_assessed")}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="card" style={{ marginTop: 14 }}>
+        <div className="head"><h2>{t("featured")}</h2><Link href="/portfolio" className="link right">{t("view_all")} →</Link></div>
+        <div className="grid cols-3">
+          {featured.map((a) => { const r = riskLevel(a); const frac = mid(a.physical_damage_total_aed); const rv = a.outstanding_allocated_aed; const p = frac !== null && rv ? Math.min(100, Math.round((frac / rv) * 100)) : null; return (
+            <Link href={`/portfolio?asset=${a.asset_id}`} className="feature" key={a.asset_id}>
+              <div className="thumb"><Scene kind={sceneFor(a.asset_type)} /></div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div className="row" style={{ justifyContent: "space-between" }}><div style={{ fontWeight: 600 }}>{lang === "ar" ? a.borrower_ar : a.borrower}</div><span className="chip">{a.asset_type.replace(/_/g, " ")}</span></div>
+                <div className="xs muted num">{t("loan")} {a.facilities?.[0]?.facility_id} · {a.asset_id} · {a.precision}</div>
+                <div className="row" style={{ justifyContent: "space-between", marginTop: 8 }}>
+                  <div><div className="num" style={{ fontWeight: 700 }}>AED {fmt(rv, lang, true)}</div><div className="xs muted">{t("loan_amount")}</div></div>
+                  <span className={`chip ${r}`}>{t(`risk_${r}` as "risk_high")}</span>
+                  <div className="row" style={{ gap: 6 }}><div className={`ring ${r}`} style={{ ["--p" as string]: p ?? 0 }}><span>{p ?? "?"}</span></div><span className="xs muted">{t("dmg_frac")} %</span></div>
+                </div>
+              </div>
+            </Link>
+          ); })}
+        </div>
+      </div>
     </AppShell>
   );
 }

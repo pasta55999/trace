@@ -18,7 +18,8 @@ export default function ReportsPage() {
   const url = (l: string) => `${API}/report/brief?lang=${l}&asset_id=A-001&measure_id=${encodeURIComponent(measure)}`;
 
   return (
-    <AppShell title={t("reports_title")}>
+    <AppShell>
+      <div className="hero"><div><h1>{t("reports_title")}</h1></div></div>
       <div className="grid cols-1-2">
         <div className="stack">
           <div className="card">

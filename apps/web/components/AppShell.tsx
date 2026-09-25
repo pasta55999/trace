@@ -5,10 +5,11 @@ import type { ReactNode } from "react";
 import { useI18n } from "@/lib/i18n";
 import Chatbot from "./Chatbot";
 import Logo from "./Logo";
+import Skyline from "./Skyline";
 
-const ICONS: Record<string, string> = { home: "⌂", portfolio: "▦", risk: "◔", agents: "✦", reports: "▤", settings: "⚙" };
+const ICONS: Record<string, string> = { home: "▦", portfolio: "◫", risk: "◔", agents: "✦", reports: "▤", settings: "⚙" };
 
-export default function AppShell({ children, title, subtitle }: { children: ReactNode; title?: ReactNode; subtitle?: ReactNode }) {
+export default function AppShell({ children, rail }: { children: ReactNode; rail?: ReactNode }) {
   const { lang, setLang, t, prefs } = useI18n();
   const path = usePathname();
   const links = [
@@ -17,28 +18,27 @@ export default function AppShell({ children, title, subtitle }: { children: Reac
   ] as const;
   const initials = prefs.name.split(/\s+/).map((s) => s[0]).join("").slice(0, 2).toUpperCase() || "A";
   return (
-    <div className="shell">
-      <aside className="sidebar">
-        <Link href="/" className="logo"><Logo size={26} /></Link>
-        {links.map(([href, icon, label]) => (
-          <Link key={href} href={href} className={path === href ? "active" : ""}><span className="icon">{ICONS[icon]}</span>{label}</Link>
-        ))}
-        <div className="user">
-          <span className="avatar">{initials}</span>
-          <div><div>{prefs.name}</div><div className="muted small">{t("bank_analyst")}</div></div>
+    <div className={`shell ${rail ? "" : "no-rail"}`}>
+      <aside className="side">
+        <Link href="/" className="brand"><Logo size={24} /></Link>
+        <nav>
+          {links.map(([href, icon, label]) => <Link key={href} href={href} className={path === href ? "active" : ""}><span className="ico">{ICONS[icon]}</span>{label}</Link>)}
+        </nav>
+        <div className="art">
+          <Skyline />
+          <div className="caption">{t("side_caption")}</div>
         </div>
       </aside>
-      <div className="content">
+      <div className="main">
         <div className="topbar">
-          <div>{title && <h1>{title}</h1>}{subtitle && <div className="sub">{subtitle}</div>}</div>
-          <div className="right">
-            <span className="num">{new Date().toLocaleDateString(lang === "ar" ? "ar-AE" : "en-GB", { day: "2-digit", month: "short", year: "numeric" })}</span>
-            <button className="btn ghost sm" onClick={() => setLang(lang === "en" ? "ar" : "en")}>{lang === "en" ? "عربي" : "EN"}</button>
-          </div>
+          <span className="tag">{t("tagline")}</span>
+          <label className="search"><span>⌕</span><input placeholder={t("search_ph")} /><span className="kbd">⌘K</span></label>
+          <div className="langsw"><button className={lang === "en" ? "on" : ""} onClick={() => setLang("en")}>EN</button><span>|</span><button className={lang === "ar" ? "on" : ""} onClick={() => setLang("ar")}>عربي</button></div>
+          <Link href="/settings" className="avatar" title={prefs.name}>{initials}</Link>
         </div>
-        <div className="banner">{t("synthetic")}</div>
         {children}
       </div>
+      {rail && <aside className="rail">{rail}</aside>}
       <Chatbot />
     </div>
   );

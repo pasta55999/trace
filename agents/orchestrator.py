@@ -95,7 +95,8 @@ class Orchestrator(Agent):
     def status(self) -> dict[str, Any]:
         run = self.store.s.runs.get(self.inv.last_run_id) if self.inv.last_run_id else None
         diff = self.tool("diff_runs", prev_run_id=self.inv.previous_run_id, run_id=self.inv.last_run_id) if self.inv.last_run_id else None
-        return {"investigation": self.inv.model_dump(), "coverage": self.store.coverage(), "questions": [q.model_dump() for q in self.store.open_questions()], "run": run, "diff": diff, "cases": [c.model_dump() for c in self.store.s.cases.values()], "assets": [a.model_dump() for a in self.store.s.assets.values()], "locations": [l.model_dump() for l in self.store.s.locations.values() if l.id in {a.location_id for a in self.store.s.assets.values()}]}
+        docs = [{"id": d.id, "type": d.type, "language": d.language, "related_collateral": d.related_collateral, "fields": len([f for f in d.fields if not f.flagged_instruction]), "firewall_flags": d.firewall_flags, "title": d.pages[0]["lines"][0] if d.pages and d.pages[0]["lines"] else d.id} for d in self.store.s.documents.values()]
+        return {"investigation": self.inv.model_dump(), "coverage": self.store.coverage(), "questions": [q.model_dump() for q in self.store.open_questions()], "run": run, "diff": diff, "cases": [c.model_dump() for c in self.store.s.cases.values()], "assets": [a.model_dump() for a in self.store.s.assets.values()], "locations": [l.model_dump() for l in self.store.s.locations.values() if l.id in {a.location_id for a in self.store.s.assets.values()}], "documents": docs, "activity": self.store.s.audit[-40:]}
 
     def ask(self, question: str) -> dict[str, Any]:
         run = self.store.s.runs[self.inv.last_run_id]

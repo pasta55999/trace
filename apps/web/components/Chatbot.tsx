@@ -93,7 +93,7 @@ export default function Chatbot() {
   return (
     <div className="chat" role="dialog" aria-label={t("chat_title")}>
       <div className="head">
-        <span className="avatar">✦</span>
+        <span className="ico-box">✦</span>
         <div><Logo size={16} /><div className="status">{listening ? t("listening") : t("chat_sub")}</div></div>
         <div className="row" style={{ marginInlineStart: "auto" }}>
           <div className="tabs" title="microphone language">

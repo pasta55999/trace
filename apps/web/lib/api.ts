@@ -33,7 +33,10 @@ export interface Run { run_id: string; label: string; scenario: { label_en: stri
 export interface Question { id: string; asset_id: string; kind: string; question_en: string; question_ar: string; candidates: { feature_id: string | null; label: string; precision: string; confidence: number }[] }
 export interface Diff { previous_run: string | null; current_run: string; changes: { asset_id: string; field: string; kind: string; from: string; to: string }[]; summary_en: string; summary_ar: string }
 export interface Case { id: string; title: string; owner: string; status: string; evidence_request: string[]; decision: string | null }
-export interface Status { investigation: { id: string; state: string }; coverage: Record<string, number>; questions: Question[]; run: Run | null; diff: Diff | null; cases: Case[] }
+export interface Doc { id: string; type: string; language: string; related_collateral: string | null; fields: number; firewall_flags: string[]; title: string }
+export interface Activity { at: string; actor: string; action: string; [k: string]: unknown }
+export interface Loc { id: string; asset_id: string; lon: number | null; lat: number | null; precision: string; district_id: string | null }
+export interface Status { investigation: { id: string; state: string; history: { at: string; state: string }[] }; coverage: Record<string, number>; questions: Question[]; run: Run | null; diff: Diff | null; cases: Case[]; documents: Doc[]; activity: Activity[]; locations: Loc[] }
 export interface Answer { text: string; refs: string[]; lang: string; agent: string; genome: string; intent: string }
 export interface Measure { id: string; name_en: string; name_ar: string; capex_aed: number; notes_en?: string; notes_ar?: string }
 export interface Comparison { measure: Measure; capex_aed: number; avoided_loss_event_aed: Value; residual_damage_event_aed: Value; event_conditional_benefit_cost_ratio?: number; npv_aed: Value; disclaimer_en: string; disclaimer_ar: string; baseline: Record<string, Value>; protected: Record<string, Value> }

@@ -1,5 +1,6 @@
 "use client";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import AppShell from "@/components/AppShell";
 import { api, type AssetRow, type Measure } from "@/lib/api";
 import { fmt, useI18n } from "@/lib/i18n";
@@ -7,12 +8,13 @@ import { riskLevel } from "@/lib/risk";
 import Scene, { sceneFor } from "@/components/Scene";
 import { useStatus } from "@/lib/useStatus";
 
-export default function Portfolio() {
+function PortfolioInner() {
+  const sp = useSearchParams();
   const { lang, t } = useI18n();
   const { status: s, busy, answer } = useStatus();
   const [filter, setFilter] = useState<string>("all");
   const [search, setSearch] = useState("");
-  const [sel, setSel] = useState<string | null>(null);
+  const [sel, setSel] = useState<string | null>(sp.get("asset"));
   const [tab, setTab] = useState<"overview" | "climate" | "financials" | "actions">("overview");
   const [measures, setMeasures] = useState<Measure[]>([]);
   const [answers, setAnswers] = useState<Record<string, string>>({});
@@ -26,7 +28,8 @@ export default function Portfolio() {
   const fac = a?.facilities?.[0];
 
   return (
-    <AppShell title={t("nav_portfolio")}>
+    <AppShell>
+      <div className="hero"><div><h1>{t("nav_portfolio")}</h1></div></div>
       <div className="grid cols-1-2">
         <div className="card">
           <div className="row" style={{ marginBottom: 10 }}>
@@ -125,4 +128,8 @@ export default function Portfolio() {
       </div>
     </AppShell>
   );
+}
+
+export default function Portfolio() {
+  return <Suspense fallback={null}><PortfolioInner /></Suspense>;
 }

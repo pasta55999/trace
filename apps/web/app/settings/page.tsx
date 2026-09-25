@@ -12,7 +12,8 @@ export default function SettingsPage() {
   useEffect(() => { setName(prefs.name); setVoice(prefs.voice); }, [prefs]);
   useEffect(() => { api.health().then((h) => setLlm(h.llm_provider)).catch(() => setLlm("offline")); }, []);
   return (
-    <AppShell title={t("settings")}>
+    <AppShell>
+      <div className="hero"><div><h1>{t("settings")}</h1></div></div>
       <div className="card" style={{ maxWidth: 560 }}>
         <div className="stack">
           <label className="stack"><span className="muted small">{t("your_name")}</span><input value={name} onChange={(e) => setName(e.target.value)} /></label>

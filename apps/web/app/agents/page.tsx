@@ -35,7 +35,8 @@ export default function AgentsPage() {
   const stepState = (st: readonly string[], k: string) => (st.includes(state) ? (k === "gap" && openQ > 0 ? "active" : k === "analyst" ? "active" : "completed") : state === "uploaded" ? "waiting" : "in_progress");
 
   return (
-    <AppShell title={t("agents_title")} subtitle={t("agents_sub")}>
+    <AppShell>
+      <div className="hero"><div><h1>{t("agents_title")}</h1><div className="sub">{t("agents_sub")}</div></div></div>
       <div className="grid cols-1-2">
         <div className="card">
           <div className="timeline">

@@ -27,7 +27,8 @@ function RiskInner() {
   const bb = cmp ? mid(cmp.baseline.interruption_cost_aed) : null, pb = cmp ? mid(cmp.protected.interruption_cost_aed) : null;
 
   return (
-    <AppShell title={t("nav_risk")}>
+    <AppShell>
+      <div className="hero"><div><h1>{t("nav_risk")}</h1></div></div>
       <div className="tabs" style={{ marginBottom: 14 }}>
         {(["scenarios", "measures", "comparisons"] as const).map((k) => <button key={k} className={tab === k ? "on" : ""} onClick={() => setTab(k)}>{t(k)}</button>)}
       </div>

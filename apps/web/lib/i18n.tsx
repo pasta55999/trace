@@ -6,6 +6,10 @@ export type Lang = "en" | "ar";
 const STRINGS = {
   en: {
     app: "trace", synthetic: "Synthetic demo data — illustrative scenario, not an operational prediction",
+    tagline: "Where capital meets climate.", search_ph: "Search assets, borrowers, or loans…", side_caption: "Smarter decisions for a more resilient tomorrow.",
+    overview_sub: "Here's your portfolio's climate financial risk overview.", live: "Live", kpi_linked: "Assets linked", kpi_exposure: "Exposure at risk", kpi_reviews: "Reviews required", monitored: "Monitored", potentially: "Potentially affected", requiring: "Requiring attention", props_fac: "Properties & facilities", vs_last: "vs. last run",
+    map_title: "Climate exposure map", map_sub: "Where your assets face climate risk across the UAE.", signals: "Priority signals", signals_sub: "Assets with the highest climate financial risk.", impact_title: "Climate → Financial impact", impact_sub: "How climate hazards could affect your portfolio.", all_hazards: "All hazards", hazard: "Hazard", assets_col: "Assets", exposure_col: "Exposure", impact_col: "Potential impact", featured: "Featured assets", view_all: "View all", loan_amount: "Loan amount", dmg_frac: "damage / loan",
+    intel: "trace intelligence", intel_sub: "Autonomous AI agents working for you.", recent: "Recent activity", bilingual_docs: "Bilingual documents", cta_title: "From data to action.", cta_sub: "Explore risk scenarios, compare solutions, and protect what matters.", cta_btn: "View detailed report", arabic: "Arabic", english: "English",
     // landing
     hero_1: "Climate risks.", hero_2: "Financial impact.", hero_3: "A clearer picture.",
     hero_p: "See what's exposed. Know what it costs. Act first.",
@@ -38,6 +42,10 @@ const STRINGS = {
   },
   ar: {
     app: "trace", synthetic: "بيانات عرض اصطناعية — سيناريو توضيحي، وليس تنبؤاً تشغيلياً",
+    tagline: "حيث يلتقي رأس المال بالمناخ.", search_ph: "ابحث عن الأصول أو المقترضين أو القروض…", side_caption: "قرارات أذكى لغدٍ أكثر مرونة.",
+    overview_sub: "إليك نظرة عامة على المخاطر المالية المناخية لمحفظتك.", live: "مباشر", kpi_linked: "الأصول المرتبطة", kpi_exposure: "التعرض للمخاطر", kpi_reviews: "مراجعات مطلوبة", monitored: "مراقب", potentially: "قد تتأثر", requiring: "تتطلب اهتماماً", props_fac: "عقارات ومنشآت", vs_last: "مقارنة بآخر تشغيل",
+    map_title: "خريطة التعرض المناخي", map_sub: "أين تواجه أصولك مخاطر المناخ في الإمارات.", signals: "إشارات ذات أولوية", signals_sub: "الأصول ذات أعلى مخاطر مالية مناخية.", impact_title: "المناخ ← الأثر المالي", impact_sub: "كيف يمكن أن تؤثر المخاطر المناخية على محفظتك.", all_hazards: "كل المخاطر", hazard: "الخطر", assets_col: "الأصول", exposure_col: "التعرض", impact_col: "الأثر المحتمل", featured: "أصول مميزة", view_all: "عرض الكل", loan_amount: "مبلغ القرض", dmg_frac: "الضرر / القرض",
+    intel: "ذكاء trace", intel_sub: "وكلاء ذكاء اصطناعي مستقلون يعملون من أجلك.", recent: "النشاط الأخير", bilingual_docs: "مستندات ثنائية اللغة", cta_title: "من البيانات إلى الفعل.", cta_sub: "استكشف سيناريوهات المخاطر وقارن الحلول واحمِ ما يهم.", cta_btn: "عرض التقرير المفصل", arabic: "العربية", english: "الإنجليزية",
     hero_1: "مخاطر المناخ.", hero_2: "الأثر المالي.", hero_3: "صورة أوضح.",
     hero_p: "اعرف ما هو معرّض. اعرف التكلفة. تحرّك أولاً.",
     get_started: "ابدأ الآن", landing_preview: "مخاطرك في لمحة",
